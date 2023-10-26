@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:post/pages/qrcode.dart' as qrcode;
+import 'package:post/pages/push.dart';
+
 
 class DataAdd extends StatefulWidget {
 
@@ -13,14 +14,15 @@ class DataAdd extends StatefulWidget {
 
 class _DataAddState extends State<DataAdd> {
 
-  String? familiya;
-  String? name;
-  String? otchestvo;
-  int? nomer;
-  int? seriya;
-  int? INN;
   String? result;
   _DataAddState(this.result);
+
+  Data data = new Data(
+      familiya: '',
+      name: '',
+      otchestvo: '',
+      seriya: 0,
+      inn: 0);
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +88,7 @@ class _DataAddState extends State<DataAdd> {
                     ),
                   ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.only(left: 25, right: 17),
                 child: Container(
                 padding : EdgeInsets.only(top: 10, bottom: 20,left: 5, right: 15),
                 margin: EdgeInsets.fromLTRB(10, 30, 20,0),
@@ -100,7 +102,7 @@ class _DataAddState extends State<DataAdd> {
                           fontSize: 18,
                         ),
                         onChanged: (String val){
-                          familiya=val;
+                          data.familiya=val;
                         },
                         decoration: InputDecoration(
                           prefixIcon: Icon(Icons.manage_accounts, color: Colors.purple,),
@@ -128,7 +130,7 @@ class _DataAddState extends State<DataAdd> {
                           fontSize: 18,
                         ),
                         onChanged: (String val){
-                          name=val;
+                          data.name=val;
                         },
                         decoration: InputDecoration(
                           prefixIcon: Icon(Icons.man_3_rounded, color: Colors.purple,),
@@ -159,7 +161,7 @@ class _DataAddState extends State<DataAdd> {
                           fontSize: 18,
                         ),
                         onChanged: (String val){
-                          otchestvo=val;
+                          data.otchestvo=val;
                         },
                         decoration: InputDecoration(
                           prefixIcon: Icon(Icons.manage_accounts_outlined, color: Colors.purple,),
@@ -190,45 +192,7 @@ class _DataAddState extends State<DataAdd> {
                           fontSize: 18,
                         ),
                         onChanged: (String val){
-                          nomer=int.parse(val);
-                        },
-                        keyboardType: TextInputType.number,
-                        inputFormatters: <TextInputFormatter>[
-                          FilteringTextInputFormatter.allow(
-                              RegExp('[0-9-+]')),
-                        ],
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.phone, color: Colors.purple,),
-                          focusedBorder:OutlineInputBorder(
-                              borderSide: BorderSide(width: 2, color: Colors.purpleAccent)
-                          ) ,
-                          enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide(
-                                  width: 2,
-                                  color: Colors.white
-                              )
-                          ),
-                            contentPadding: EdgeInsets.all(20),
-                            labelText: 'Номер',
-                          labelStyle: TextStyle(
-                              color: Colors.purple
-                          ),
-                            hintText: '0999 99 99 99',
-                            hintStyle: TextStyle(color: Colors.black54,fontSize: 16),
-                        ),
-                      ),
-                    ),
-                    Padding(padding: EdgeInsets.only(top:20)),
-                    Padding(
-                      padding: EdgeInsets.only(top:3),
-                      child: TextField(
-                        style: TextStyle(
-                          color: Colors.amber,
-                          fontSize: 18,
-                        ),
-                        onChanged: (String val){
-                          seriya=int.parse(val);
+                          data.seriya=int.parse(val);
                         },
                         keyboardType: TextInputType.number,
                         inputFormatters: <TextInputFormatter>[
@@ -266,7 +230,7 @@ class _DataAddState extends State<DataAdd> {
                           fontSize: 18,
                         ),
                         onChanged: (String val){
-                          INN=int.parse(val);
+                          data.inn=int.parse(val);
                         },
                         keyboardType: TextInputType.number,
                         inputFormatters: <TextInputFormatter>[
