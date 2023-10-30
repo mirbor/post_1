@@ -1,4 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:post/pages/qrcode.dart';
+import 'UserObj.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -20,6 +25,27 @@ class _LoginPageState extends State<LoginPage> {
   }
   static const kprimaryColor = Color(0xFFF1E6FF);
   static const primaryColor = Color(0xFFE1BEE7);
+
+  Future<UserObj> authenticate(String username, String pwd ) async {
+    final http.Response response = await http.post(
+      Uri.parse('http://77.235.20.21:8087/api/Mobiles/Login'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'Username': username ?? "",
+        'Password': pwd ?? ""
+      }),
+    );
+    print("Results: "+response.body);
+    return UserObj.fromJson(json.decode(response.body));
+    // final tt=TokenObj(IsAuthSuccessful: false,errorMessage: "test",Token: "test");
+
+    // tt.IsAuthSuccessful=body['IsAuthSuccessful'];
+    //print("Rets: "+body['errorMessage']);
+    // return json.decode(response.body);
+
+  }
 
 
   @override
@@ -167,9 +193,19 @@ class _LoginPageState extends State<LoginPage> {
                           Padding(padding: EdgeInsets.only(left:35)),
                           ElevatedButton(
                             onPressed: (){
-                              if(email=='test' && pass=='test'){
-                                Navigator.restorablePushReplacementNamed(context, 'scan');}
-                              else if(email=='' || pass=='' || email==pass && pass==''){
+                            //  if(email=='test' && pass=='test'){
+                           //     Navigator.restorablePushReplacementNamed(context, 'scan');
+                            //  }
+                          authenticate(email,pass).then((data) {
+                            //  print("Errer "+data.errorMessage??" ");
+                          if(data.isAuthSuccessful){
+                            var route= new MaterialPageRoute(
+                              builder: (BuildContext context)=>
+                              new QRscanner(otdelenieID: data.OtdelenieId),
+                            );
+                            Navigator.of(context).push(route);
+                          }
+                          else if(email=='' || pass=='' || email==pass && pass==''){
                                 final snackBar1 = SnackBar(
                                   closeIconColor: Colors.red,
                                   content: Text('Заполните все данные'),
@@ -185,6 +221,7 @@ class _LoginPageState extends State<LoginPage> {
                                 );
                                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
                             };
+                          });
                               },
                             child: Text('Войти'),
                             style: ElevatedButton.styleFrom(

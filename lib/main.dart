@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:post/pages/datadding.dart';
 import 'package:post/pages/loginpage.dart';
-import 'package:post/pages/qrcode.dart';
+import 'package:post/pages/newqpage.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       initialRoute: 'log',
       routes: {
         'log' : (context)=> LoginPage(),
-        'scan' : (context)=> QRscanner(),
+        'new' : (context)=> NewPage()
       },
     );
   }

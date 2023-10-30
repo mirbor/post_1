@@ -5,8 +5,8 @@ class Data{
   String familiya;
   String name;
   String otchestvo;
-  int seriya;
-  int inn;
+  String seriya;
+  String inn;
 
   Data({required this.familiya, required this.name, required this.otchestvo, required this.seriya, required this.inn});
 

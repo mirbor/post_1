@@ -1,28 +1,57 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+import 'package:post/pages/UserObj.dart';
 import 'package:post/pages/push.dart';
 
 
 class DataAdd extends StatefulWidget {
 
   final String? res;
-  const DataAdd({Key? key, required this.res }) : super(key: key);
+  final String? id;
+  const DataAdd({Key? key, required this.res, required this.id }) : super(key: key);
 
   @override
-  State<DataAdd> createState() => _DataAddState(res);
+  State<DataAdd> createState() => _DataAddState(res,id);
 }
 
 class _DataAddState extends State<DataAdd> {
 
   String? result;
-  _DataAddState(this.result);
+  String? id;
+  _DataAddState(this.result,this.id);
 
   Data data = new Data(
       familiya: '',
       name: '',
       otchestvo: '',
-      seriya: 0,
-      inn: 0);
+      seriya: '',
+      inn: '');
+
+  Future<UserObj> postData(Data data) async {
+    final http.Response response = await http.post(
+      Uri.parse('http://77.235.20.21:8087/api/Mobiles/Vruchit'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'LastName': data.familiya ?? "",
+        'Name': data.name ?? "",
+        'Otchestvo': data.otchestvo ?? "",
+        'PIN': data.inn ?? "",
+        'Passport': data.seriya ?? "",
+        'Id':this.id??""
+      }),
+    );
+    print(response.body);
+    if (response.statusCode == 200) {
+      return UserObj.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Failed to create album.');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -192,7 +221,7 @@ class _DataAddState extends State<DataAdd> {
                           fontSize: 18,
                         ),
                         onChanged: (String val){
-                          data.seriya=int.parse(val);
+                          data.seriya=val;
                         },
                         keyboardType: TextInputType.number,
                         inputFormatters: <TextInputFormatter>[
@@ -230,7 +259,7 @@ class _DataAddState extends State<DataAdd> {
                           fontSize: 18,
                         ),
                         onChanged: (String val){
-                          data.inn=int.parse(val);
+                          data.inn=val;
                         },
                         keyboardType: TextInputType.number,
                         inputFormatters: <TextInputFormatter>[
@@ -264,8 +293,11 @@ class _DataAddState extends State<DataAdd> {
                       children: [
                         ElevatedButton(
                             onPressed: (){
-
-                              Navigator.of(context).pushNamed('scan');
+                              postData(data).then((result) {
+                               if (result.isAuthSuccessful){
+                               Navigator.of(context).pushNamed('new');
+                               };
+                               });
                             },
                             child: Container(
                               height: 50,
