@@ -3,6 +3,7 @@ import 'package:post/pages/loginpage.dart';
 import 'package:post/pages/newqpage.dart';
 
 
+
 void main() {
   runApp(const MyApp());
 }
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
       initialRoute: 'log',
       routes: {
         'log' : (context)=> LoginPage(),
-        'new' : (context)=> NewPage()
+        'new' : (context)=> NewPage(),
       },
     );
   }

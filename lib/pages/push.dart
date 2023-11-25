@@ -2,9 +2,9 @@ import 'dart:core';
 
 
 class Data{
-  String familiya;
-  String name;
-  String otchestvo;
+  String? familiya;
+  String? name;
+  String? otchestvo;
   String seriya;
   String inn;
 

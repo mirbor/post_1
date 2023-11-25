@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:post/pages/datadding.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:post/pages/UserObj.dart';
+import 'package:post/pages/poluchatel.dart';
 
 class QRscanner extends StatefulWidget {
 
@@ -18,6 +20,9 @@ class QRscanner extends StatefulWidget {
 class _QRscannerState extends State<QRscanner> {
 
   int? otdelen;
+  static const backColor = Color(0xFFEF9A9A);
+  static const primaryColor = Color(0xFFE53935);
+  static const buttonColor = Color(0xFFC62828);
 
   _QRscannerState(this.otdelen);
 
@@ -47,11 +52,15 @@ class _QRscannerState extends State<QRscanner> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text('Сканирование'),
-        backgroundColor: Colors.deepPurple,
+        title: Text('Сканирование',style: TextStyle(color: Colors.white),),
+        backgroundColor: primaryColor,
         centerTitle: true,
         leading: IconButton(
           onPressed: ()=> Navigator.pushNamed(context, 'log'),
@@ -70,10 +79,11 @@ class _QRscannerState extends State<QRscanner> {
         child: SingleChildScrollView(
           reverse: true,
           child: Container(
+            height: MediaQuery.of(context).size.height*.94,
             decoration: BoxDecoration(
                 image: DecorationImage(
                     image: AssetImage('assets/37b57509ff47f603e522df4fcb5c3b48.jpg'),
-                  fit: BoxFit.cover
+                    fit: BoxFit.cover
                 )
             ),
             child: Padding(
@@ -83,101 +93,104 @@ class _QRscannerState extends State<QRscanner> {
                 child: Column(
                   children: [
                     Container(
-                      width: 350,
-                      child: TextField(
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
+                        width: 350,
+                        child: TextField(
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
 
-                        ),
-                        onChanged: (String val){
-                          result=val;
-                        },
-                        decoration: InputDecoration(
-                          labelText: 'BarCode',
-                          labelStyle: TextStyle(
                           ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
-                            borderSide: BorderSide(width: 2, color: Colors.purple)
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(width: 2, color: Colors.amber)
-                          )
-                        ),
-                      )
-                    ),
-                    Padding(padding: EdgeInsets.only(top:30)),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Container(
-                          height: 40,
-                          width: 150,
-                          child: ElevatedButton(
-                              onPressed: (){
-                                authenticate(result).then((data) {
-                                  if (data.isAuthSuccessful){
-                                    var route= new MaterialPageRoute(
-                                      builder: (BuildContext context)=>
-                                      new DataAdd(res: result,id:data.Name),
-                                    );
-                                    Navigator.of(context).push(route);
-                                  }
-                                });
-                              },
-                              child: Text('Проверить', style: TextStyle(fontSize: 17),),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.purple,
-                            ),
+                          onChanged: (String val){
+                            result=val;
+                          },
+                          decoration: InputDecoration(
+                              labelText: 'Штрих-код',
+                              labelStyle: TextStyle(
+                                color: primaryColor
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide: BorderSide(width: 2, color: primaryColor)
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(width: 2, color: backColor)
+                              )
                           ),
                         )
+                    ),
+                    Padding(padding: EdgeInsets.only(top:30)),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Container(
+                              height: 40,
+                              width: 150,
+                              child: ElevatedButton(
+                                onPressed: (){
+                                  authenticate(result).then((data) {
+                                    if (data.isAuthSuccessful){
+                                      var route= new MaterialPageRoute(
+                                        builder: (BuildContext context)=>
+                                        new Poluch(res: result,id:data.ItemId, otdelenieId: otdelen,firstName: data.Name,lastName: data.LastName,patName: data.PatronomycName,),
+                                      );
+                                      Navigator.of(context).push(route);
+                                    }
+                                  });
+                                },
+                                child: Text('Проверить', style: TextStyle(fontSize: 17, color: Colors.white),),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: primaryColor,
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                        Padding(padding: EdgeInsets.only(top:450)),
+                        Container(
+                          width: 350,
+                          height: 50,
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: primaryColor),
+                            onPressed: () async {
+                              var res = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const SimpleBarcodeScannerPage(),
+                                  )
+                              );
+                              setState(() {
+                                if (res is String) {
+                                  result = res;
+                                }
+                              });
+                              setState(() {
+                                if(result!='-1' && result!=''){
+                                  authenticate(result).then((data) {
+                                    if (data.isAuthSuccessful){
+                                      var route= new MaterialPageRoute(
+                                        builder: (BuildContext context)=>
+                                        new Poluch(res: result,id:data.ItemId, otdelenieId: otdelen,firstName: data.Name,lastName: data.LastName,patName: data.PatronomycName,),
+                                      );
+                                      Navigator.of(context).push(route);
+                                    }
+                                  });
+                                }
+                              });
+                            },
+                            icon: Icon(Icons.camera_alt_outlined, color: Colors.white,),
+                            label: Text(
+                              'Начать сканирование',
+                              style: TextStyle(color: Colors.white, fontSize: 20),
+                            ),
+                          ),
+                        ),
+                        // Padding(padding: EdgeInsets.only(top:70)),
                       ],
                     ),
-                    Padding(padding: EdgeInsets.only(top:450)),
-                    Container(
-                      width: 350,
-                      height: 50,
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.deepPurple),
-                        onPressed: () async {
-                          var res = await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const SimpleBarcodeScannerPage(),
-                              )
-                          );
-                          setState(() {
-                            if (res is String) {
-                              result = res;
-                            }
-                          });
-
-                          if(result!='-1')
-                          {
-                            authenticate(result).then((data) {
-                              if (data.isAuthSuccessful){
-                                var route= new MaterialPageRoute(
-                                  builder: (BuildContext context)=>
-                                  new DataAdd(res: result,id:data.Name),
-                                );
-                                Navigator.of(context).push(route);
-                              }
-                            });
-                            //Navigator.of(context).push(route);
-                          }
-
-
-                        },
-                        icon: Icon(Icons.camera_alt_outlined),
-                        label: Text(
-                          'Начать сканирование',
-                          style: TextStyle(color: Colors.white, fontSize: 20),
-                        ),
-                      ),
-                    ),
-                    // Padding(padding: EdgeInsets.only(top:37)),
                   ],
                 ),
               ),

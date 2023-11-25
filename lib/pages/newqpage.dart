@@ -9,11 +9,11 @@ class NewPage extends StatefulWidget {
 
 class _NewPageState extends State<NewPage> {
 
-  static const primaryColor = Color(0xFFC8E6C9);
+  static const primaryColor = Color(0xFFEF5350);
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
-      backgroundColor: Colors.lightGreenAccent,
+      backgroundColor: primaryColor,
       body: Padding(
           padding: EdgeInsets.all(20),
         child: Column(

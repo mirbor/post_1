@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:post/pages/qrcode.dart';
 import 'UserObj.dart';
@@ -23,8 +24,9 @@ class _LoginPageState extends State<LoginPage> {
       _obscured = !_obscured;
     });
   }
-  static const kprimaryColor = Color(0xFFF1E6FF);
-  static const primaryColor = Color(0xFFE1BEE7);
+  static const backColor = Color(0xFFEF9A9A);
+  static const primaryColor = Color(0xFFE53935);
+  static const buttonColor = Color(0xFFC62828);
 
   Future<UserObj> authenticate(String username, String pwd ) async {
     final http.Response response = await http.post(
@@ -50,12 +52,16 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return Scaffold(
-      backgroundColor: kprimaryColor,
+      backgroundColor: backColor,
       resizeToAvoidBottomInset: true,
       body: SingleChildScrollView(
         child: Container(
-          height: 900,
+          height: MediaQuery.of(context).size.height*.99,
           // decoration: BoxDecoration(
           //     image: DecorationImage(
           //         image: AssetImage('assets/IMG_20231014_084218.jpg'),
@@ -67,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               children: [
-                Padding(padding: EdgeInsets.only(top:80)),
+                Padding(padding: EdgeInsets.only(top:60)),
                 // Row(
                 //   mainAxisAlignment: MainAxisAlignment.start,
                 //   children: [
@@ -91,8 +97,8 @@ class _LoginPageState extends State<LoginPage> {
                       child: Text(
                         'Войдите в свой аккаунт',
                         style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.purple,
+                            fontSize: 25,
+                            color: primaryColor,
                           fontWeight: FontWeight.bold
                         ),
                       ),
@@ -103,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
                 Image(image: AssetImage('assets/—Pngtree—postman taking a letter_4404340.png')),
                 Padding(padding: EdgeInsets.only(top:10)),
                 Container(
-                  padding : EdgeInsets.only(top: 10, bottom: 20,left: 5, right: 15),
+                  padding : EdgeInsets.only(top: 10, bottom: 20,left: 5, right: 5),
                   margin: EdgeInsets.fromLTRB(10, 30, 20,0),
                   child: Column(
                     children: [
@@ -114,7 +120,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         child: TextField(
                           style: TextStyle(
-                              color: Colors.purple,
+                              color: Colors.white,
                               fontSize: 15
                           ),
                           onChanged: (String val){
@@ -125,15 +131,15 @@ class _LoginPageState extends State<LoginPage> {
                               contentPadding: EdgeInsets.all(10),
                               prefixIcon: Icon(
                                 Icons.manage_accounts,
-                                color: Colors.purple,
+                                color: Colors.white,
                                 size: 20,
                               ),
                               prefixIconConstraints: BoxConstraints(
                                   maxHeight: 20,
                                   minWidth: 40
                               ),
-                              hintText: ' Email',
-                              hintStyle: TextStyle(color: Colors.purpleAccent,fontSize: 15)
+                              hintText: ' Имя пользователя',
+                              hintStyle: TextStyle(color: Colors.white,fontSize: 15)
                           ),
                         ),
 
@@ -148,7 +154,7 @@ class _LoginPageState extends State<LoginPage> {
                           keyboardType:TextInputType.visiblePassword,
                           obscureText:_obscured,
                           style: TextStyle(
-                            color: Colors.purple,
+                            color: Colors.white,
                             fontSize: 15,
                           ),
                           onChanged: (String val){
@@ -159,7 +165,7 @@ class _LoginPageState extends State<LoginPage> {
                               contentPadding: EdgeInsets.all(14),
                               prefixIcon: Icon(
                                 Icons.key,
-                                color: Colors.purple,
+                                color: Colors.white,
                                 size: 20,
                               ),
                               suffixIcon: Padding(
@@ -171,7 +177,7 @@ class _LoginPageState extends State<LoginPage> {
                                         ? Icons.visibility_off_rounded
                                         : Icons.visibility_rounded,
                                     size: 24,
-                                    color: Colors.purple,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ),
@@ -179,53 +185,56 @@ class _LoginPageState extends State<LoginPage> {
                                   maxHeight: 20,
                                   minWidth: 40
                               ),
-                              hintText: 'Password',
-                              hintStyle: TextStyle(color: Colors.purpleAccent,fontSize: 15)
+                              hintText: 'Пароль',
+                              hintStyle: TextStyle(color: Colors.white,fontSize: 15)
                           ),
                         ),
                         // padding: EdgeInsets.only(bottom:20),
                       ),
                       Padding(padding: EdgeInsets.only(top:20)),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Padding(padding: EdgeInsets.only(left:140)),
-                          Image(image: AssetImage('assets/postbox.png'), width: 60,height: 80,),
+                          Padding(padding: EdgeInsets.only(left:120)),
+                          Image(image: AssetImage('assets/postbox.png'), width: 60,height: 80,color: primaryColor,),
                           Padding(padding: EdgeInsets.only(left:35)),
-                          ElevatedButton(
-                            onPressed: (){
-                            //  if(email=='test' && pass=='test'){
-                           //     Navigator.restorablePushReplacementNamed(context, 'scan');
-                            //  }
-                          authenticate(email,pass).then((data) {
-                            //  print("Errer "+data.errorMessage??" ");
-                          if(data.isAuthSuccessful){
-                            var route= new MaterialPageRoute(
-                              builder: (BuildContext context)=>
-                              new QRscanner(otdelenieID: data.OtdelenieId),
-                            );
-                            Navigator.of(context).push(route);
-                          }
-                          else if(email=='' || pass=='' || email==pass && pass==''){
-                                final snackBar1 = SnackBar(
-                                  closeIconColor: Colors.red,
-                                  content: Text('Заполните все данные'),
-                                  duration: Duration(seconds: 2),
-                                );
-                                ScaffoldMessenger.of(context).showSnackBar(snackBar1);
-                              }
-                              else{
-                                final snackBar = SnackBar(
-                                  closeIconColor: Colors.red,
-                                  content: Text('Вы неправильно ввели свои данные'),
-                                  duration: Duration(seconds: 2),
-                                );
-                                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                            };
-                          });
-                              },
-                            child: Text('Войти'),
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.purple
+                          SafeArea(
+                            child: ElevatedButton(
+                              onPressed: (){
+                              //  if(email=='test' && pass=='test'){
+                             //     Navigator.restorablePushReplacementNamed(context, 'scan');
+                              //  }
+                            authenticate(email,pass).then((data) {
+                              //  print("Errer "+data.errorMessage??" ");
+                            if(data.isAuthSuccessful){
+                              var route= new MaterialPageRoute(
+                                builder: (BuildContext context)=>
+                                new QRscanner(otdelenieID: data.OtdelenieId),
+                              );
+                              Navigator.of(context).push(route);
+                            }
+                            else if(email=='' || pass=='' || email==pass && pass==''){
+                                  final snackBar1 = SnackBar(
+                                    closeIconColor: Colors.red,
+                                    content: Text('Заполните все данные'),
+                                    duration: Duration(seconds: 2),
+                                  );
+                                  ScaffoldMessenger.of(context).showSnackBar(snackBar1);
+                                }
+                                else{
+                                  final snackBar = SnackBar(
+                                    closeIconColor: Colors.red,
+                                    content: Text('Вы неправильно ввели свои данные'),
+                                    duration: Duration(seconds: 2),
+                                  );
+                                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                              };
+                            });
+                                },
+                              child: Text('Войти', style: TextStyle(color: Colors.white),),
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: buttonColor
+                              ),
                             ),
                           )
                         ],
